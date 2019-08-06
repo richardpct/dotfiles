@@ -13,6 +13,9 @@ I wrote a Makefile for handling all, the syntax is as follows:
 ## Installing my .bashrc
     $ make bashrc
 
+## Installing my .tmux.conf
+    $ make tmux
+
 ## Installing my vim theme
     $ make vim_theme
 

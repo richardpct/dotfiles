@@ -12,6 +12,8 @@ TMP              := /tmp
 SHASUM256        := shasum -a 256
 BASHRC_SRC       := .bashrc
 BASHRC_DST       := $(HOME)/$(BASHRC_SRC)
+TMUX_SRC         := .tmux.conf
+TMUX_DST         := $(HOME)/$(TMUX_SRC)
 VIM_SRC          := .vimrc
 VIM_DST          := $(HOME)/$(VIM_SRC)
 VIM_THEME_SRC    := .vim/colors/beautiful.vim
@@ -34,13 +36,20 @@ help: ## Show help
 	| grep -v AWK
 
 .PHONY: all
-all: bashrc vim_theme vim terraform go ## Install all
+all: bashrc tmux vim_theme vim terraform go ## Install all
 
 .PHONY: bashrc
 bashrc: $(BASHRC_SRC) ## Install .bashrc
 ifneq ($(shell $(SHASUM256) $(BASHRC_SRC) 2> /dev/null | $(AWK) '{print $$1}'), \
        $(shell $(SHASUM256) $(BASHRC_DST) 2> /dev/null | $(AWK) '{print $$1}'))
 	cp $(BASHRC_SRC) $(BASHRC_DST)
+endif
+
+.PHONY: tmux
+tmux: $(TMUX_SRC) ## Install .tmux.conf
+ifneq ($(shell $(SHASUM256) $(TMUX_SRC) 2> /dev/null | $(AWK) '{print $$1}'), \
+       $(shell $(SHASUM256) $(TMUX_DST) 2> /dev/null | $(AWK) '{print $$1}'))
+	cp $(TMUX_SRC) $(TMUX_DST)
 endif
 
 .PHONY: vim_theme
@@ -54,7 +63,7 @@ ifneq ($(shell $(SHASUM256) $(VIM_THEME_SRC) 2> /dev/null | $(AWK) '{print $$1}'
 endif
 
 .PHONY: vim
-vim: vim_theme ## Install VIM configuration
+vim: vim_theme ## Install .vimrc
 ifneq ($(shell $(SHASUM256) $(VIM_SRC) 2> /dev/null | $(AWK) '{print $$1}'), \
        $(shell $(SHASUM256) $(VIM_DST) 2> /dev/null | $(AWK) '{print $$1}'))
 	cp $(VIM_SRC) $(VIM_DST)
