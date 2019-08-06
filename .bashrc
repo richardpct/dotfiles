@@ -20,9 +20,11 @@
 function gimp {
   DOCKER_GIMP_REPO="${HOME}/github/docker-gimp"
 
-  if [ -d $DOCKER_GIMP_REPO ] ; then
-    cd $DOCKER_GIMP_REPO
-    make
+  if [ -d $DOCKER_GIMP_REPO ]; then
+    (
+      cd $DOCKER_GIMP_REPO
+      make run
+    )
   else
     echo "$DOCKER_GIMP_REPO repository does not exist"
   fi
@@ -31,15 +33,17 @@ function gimp {
 function geeqie {
   DOCKER_GEEQIE_REPO="${HOME}/github/docker-geeqie"
 
-  if [ -d $DOCKER_GEEQIE_REPO ] ; then
-    cd $DOCKER_GEEQIE_REPO
-    make
+  if [ -d $DOCKER_GEEQIE_REPO ]; then
+    (
+      cd $DOCKER_GEEQIE_REPO
+      make run
+    )
   else
     echo "$DOCKER_GEEQIE_REPO repository does not exist"
   fi
 }
 
-if [ -f ${HOME}/.git-prompt.sh ] ; then
+if [ -f ${HOME}/.git-prompt.sh ]; then
   GIT_PS1_SHOWDIRTYSTATE=1
   GIT_PS1_SHOWSTASHSTATE=1
   source ${HOME}/.git-prompt.sh
@@ -48,19 +52,19 @@ else
   PS1='\[\033[00;36m\]@\[\033[00m\]\h \[\033[01;37m\]\w\[\033[00m\] \$ '
 fi
 
-if echo $PATH | grep -v '/opt/bin' > /dev/null ; then
+if echo $PATH | grep -v '/opt/bin' > /dev/null; then
   PATH=$PATH:${HOME}/opt/bin:${HOME}/Library/Python/2.7/bin:${HOME}/opt/go/bin:${HOME}/go/bin
 fi
 
-if [ $(uname) == 'Darwin' ] ; then
+if [ $(uname) == 'Darwin' ]; then
   export CLICOLOR=1
   export LSCOLORS='exfxcxdxcxegedabagacad'
 fi
 
-if [ -f ${HOME}/opt/bin/tree ] ; then
+if [ -f ${HOME}/opt/bin/tree ]; then
   alias tree='tree -C'
 fi
 
-if [ -x ${HOME}/opt/bin/make ] ; then
+if [ -x ${HOME}/opt/bin/make ]; then
   alias make='${HOME}/opt/bin/make'
 fi
