@@ -2,7 +2,7 @@
 BIN              := /usr/bin
 OPT_LOCAL        := $(HOME)/opt
 BIN_LOCAL        := $(HOME)/opt/bin
-VPATH            := $(HOME)/opt $(HOME)/opt/bin
+VPATH            := $(OPT_LOCAL) $(BIN_LOCAL)
 AWK              := $(BIN)/awk
 SED              := $(BIN)/sed
 UNZIP            := $(BIN)/unzip
@@ -27,62 +27,63 @@ GO_URL           := https://dl.google.com/go
 GO_SHA256        := https://golang.org/dl/
 GO_TAR           := go$(GO_VERS).darwin-amd64.tar.gz
 
+# $(call copy-file,FILE_SRC,FILE_DST)
+define copy-file
+  @if [ "$$($(SHASUM256) $1 2> /dev/null | $(AWK) '{print $$1}')" != "$$($(SHASUM256) $2 2> /dev/null | $(AWK) '{print $$1}')" ]; \
+  then \
+    cp -v $1 $2; \
+  fi
+endef
+
+ifeq "$(MAKECMDGOALS)" "$(filter $(MAKECMDGOALS), terraform go)"
+  ifeq "$(wildcard $(BIN_LOCAL)/)" ""
+    $(shell mkdir $(BIN_LOCAL))
+  endif
+endif
+
 .PHONY: help
 help: ## Show help
 	@echo "Usage: make TARGET\n"
 	@echo "Targets:"
-	@$(AWK) -F ":.* ##" '/.*:.*##/{ printf "%-13s%s\n", $$1, $$2 }' \
+	@$(AWK) -F ":.* ##" '/^[^#].*:.*##/{printf "%-17s%s\n", $$1, $$2}' \
 	$(MAKEFILE_LIST) \
 	| grep -v AWK
 
 .PHONY: all
-all: bashrc tmux vim_theme vim terraform go ## Install all
+all: $(BASHRC_DST) $(TMUX_DST) $(VIM_DST) $(VIM_THEME_DST) terraform go ## Install all
 
-.PHONY: bashrc
-bashrc: $(BASHRC_SRC) ## Install .bashrc
-ifneq ($(shell $(SHASUM256) $(BASHRC_SRC) 2> /dev/null | $(AWK) '{print $$1}'), \
-       $(shell $(SHASUM256) $(BASHRC_DST) 2> /dev/null | $(AWK) '{print $$1}'))
-	cp $(BASHRC_SRC) $(BASHRC_DST)
-endif
+.PHONY: $(BASHRC_DST)
+$(BASHRC_DST): $(BASHRC_SRC) ## Install .bashrc
+	$(call copy-file,$<,$@)
 
-.PHONY: tmux
-tmux: $(TMUX_SRC) ## Install .tmux.conf
-ifneq ($(shell $(SHASUM256) $(TMUX_SRC) 2> /dev/null | $(AWK) '{print $$1}'), \
-       $(shell $(SHASUM256) $(TMUX_DST) 2> /dev/null | $(AWK) '{print $$1}'))
-	cp $(TMUX_SRC) $(TMUX_DST)
-endif
+.PHONY: $(TMUX_DST)
+$(TMUX_DST): $(TMUX_SRC) ## Install .tmux.conf
+	$(call copy-file,$<,$@)
 
-.PHONY: vim_theme
-vim_theme: ## Install VIM theme
-ifeq "$(wildcard $(HOME)/.vim/colors)" ""
-	mkdir -p $(HOME)/.vim/colors
-endif
-ifneq ($(shell $(SHASUM256) $(VIM_THEME_SRC) 2> /dev/null | $(AWK) '{print $$1}'), \
-       $(shell $(SHASUM256) $(VIM_THEME_DST) 2> /dev/null | $(AWK) '{print $$1}'))
-	cp $(VIM_THEME_SRC) $(VIM_THEME_DST)
-endif
+.PHONY: $(VIM_DST)
+$(VIM_DST): $(VIM_SRC) $(VIM_THEME_DST) ## Install .vimrc
+	$(call copy-file,$<,$@)
 
-.PHONY: vim
-vim: vim_theme ## Install .vimrc
-ifneq ($(shell $(SHASUM256) $(VIM_SRC) 2> /dev/null | $(AWK) '{print $$1}'), \
-       $(shell $(SHASUM256) $(VIM_DST) 2> /dev/null | $(AWK) '{print $$1}'))
-	cp $(VIM_SRC) $(VIM_DST)
-endif
+.PHONY: $(VIM_THEME_DST)
+$(VIM_THEME_DST): $(VIM_THEME_SRC) $(HOME)/.vim/colors ## Install VIM theme
+	$(call copy-file,$<,$@)
+
+$(HOME)/.vim/colors:
+	mkdir -p $@
 
 terraform: ## Install Terraform
-ifneq ($(shell $(CURL) -s $(TERRAFORM_SHA256) | $(AWK) '/darwin_amd64/{print $$1}'), \
-       $(shell $(SHASUM256) $(TMP)/$(TERRAFORM_ZIP) 2> /dev/null | $(AWK) '{print $$1}'))
-	$(CURL) $(TERRAFORM_URL)/$(TERRAFORM_ZIP) -o $(TMP)/$(TERRAFORM_ZIP)
-endif
-ifeq "$(wildcard $(BIN_LOCAL))" ""
-	mkdir -p $(BIN_LOCAL)
-endif
+	if [ "$$($(CURL) -s $(TERRAFORM_SHA256) | $(AWK) '/darwin_amd64/{print $$1}')" !=  "$$($(SHASUM256) $(TMP)/$(TERRAFORM_ZIP) 2> /dev/null | $(AWK) '{print $$1}')" ]; \
+	then \
+	  $(CURL) $(TERRAFORM_URL)/$(TERRAFORM_ZIP) -o $(TMP)/$(TERRAFORM_ZIP); \
+	fi
+
 	cd $(BIN_LOCAL) && \
 	$(UNZIP) $(TMP)/$(TERRAFORM_ZIP)
 
 go: ## Install GO
-ifneq ($(shell $(SHASUM256) $(TMP)/$(GO_TAR) 2> /dev/null | $(AWK) '{print $$1}'), \
-       $(shell $(CURL) -s $(GO_SHA256) | $(AWK) 'BEGIN{RS = '\n\n'}/go1.12.7.darwin-amd64.tar.gz/{ print }' | $(SED) -n -e 's/ *<td><tt>\(.*\)<\/tt><\/td>/\1/p'))
-	$(CURL) $(GO_URL)/$(GO_TAR) -o $(TMP)/$(GO_TAR)
-endif
+	if [ "$$($(SHASUM256) $(TMP)/$(GO_TAR) 2> /dev/null | $(AWK) '{print $$1}')" != "$$($(CURL) -s $(GO_SHA256) | $(AWK) 'BEGIN{RS = '\n\n'}/go1.12.7.darwin-amd64.tar.gz/{ print }' | $(SED) -n -e 's/ *<td><tt>\(.*\)<\/tt><\/td>/\1/p')" ]; \
+	then \
+	  $(CURL) $(GO_URL)/$(GO_TAR) -o $(TMP)/$(GO_TAR); \
+	fi
+
 	$(TAR) xzvf $(TMP)/$(GO_TAR) -C $(OPT_LOCAL)

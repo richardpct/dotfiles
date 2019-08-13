@@ -5,7 +5,7 @@ Here are my configuration files and some programs that I use on my MacBook
 * MacOS
 
 # Usage
-I wrote a Makefile for handling all, the syntax is as follows:
+I wrote a Makefile to handle all, the syntax is as follows:
 
 ## Getting Help
     $ make help
