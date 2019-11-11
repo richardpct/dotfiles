@@ -1,35 +1,37 @@
-.DEFAULT_GOAL    := help
-BIN              := /usr/bin
-OPT_LOCAL        := $(HOME)/opt
-BIN_LOCAL        := $(HOME)/opt/bin
-VPATH            := $(OPT_LOCAL) $(BIN_LOCAL)
-AWK              := $(BIN)/awk
-SED              := $(BIN)/sed
-UNZIP            := $(BIN)/unzip
-TAR              := $(BIN)/tar
-CURL             := $(BIN)/curl
-TMP              := /tmp
-SHASUM256        := shasum -a 256
-BASHRC_SRC       := .bashrc
-BASHRC_DST       := $(HOME)/$(BASHRC_SRC)
-ZSHRC_SRC        := .zshrc
-ZSHRC_DST        := $(HOME)/$(ZSHRC_SRC)
-ZPROFILE_SRC     := .zprofile
-ZPROFILE_DST     := $(HOME)/$(ZPROFILE_SRC)
-TMUX_SRC         := .tmux.conf
-TMUX_DST         := $(HOME)/$(TMUX_SRC)
-VIM_SRC          := .vimrc
-VIM_DST          := $(HOME)/$(VIM_SRC)
-VIM_THEME_SRC    := .vim/colors/beautiful.vim
-VIM_THEME_DST    := $(HOME)/$(VIM_THEME_SRC)
-TERRAFORM_VERS   := 0.12.8
-TERRAFORM_URL    := https://releases.hashicorp.com/terraform/$(TERRAFORM_VERS)
-TERRAFORM_SHA256 := $(TERRAFORM_URL)/terraform_$(TERRAFORM_VERS)_SHA256SUMS
-TERRAFORM_ZIP    := terraform_$(TERRAFORM_VERS)_darwin_amd64.zip
-GO_VERS          := 1.13.4
-GO_URL           := https://dl.google.com/go
-GO_SHA256        := https://golang.org/dl/
-GO_TAR           := go$(GO_VERS).darwin-amd64.tar.gz
+.DEFAULT_GOAL      := help
+BIN                := /usr/bin
+OPT_LOCAL          := $(HOME)/opt
+BIN_LOCAL          := $(HOME)/opt/bin
+VPATH              := $(OPT_LOCAL) $(BIN_LOCAL)
+AWK                := $(BIN)/awk
+SED                := $(BIN)/sed
+UNZIP              := $(BIN)/unzip
+TAR                := $(BIN)/tar
+CURL               := $(BIN)/curl
+KUBECTL            := /usr/local/bin/kubectl
+TMP                := /tmp
+SHASUM256          := shasum -a 256
+BASHRC_SRC         := .bashrc
+BASHRC_DST         := $(HOME)/$(BASHRC_SRC)
+ZSHRC_SRC          := .zshrc
+ZSHRC_DST          := $(HOME)/$(ZSHRC_SRC)
+ZPROFILE_SRC       := .zprofile
+ZPROFILE_DST       := $(HOME)/$(ZPROFILE_SRC)
+TMUX_SRC           := .tmux.conf
+TMUX_DST           := $(HOME)/$(TMUX_SRC)
+VIM_SRC            := .vimrc
+VIM_DST            := $(HOME)/$(VIM_SRC)
+VIM_THEME_SRC      := .vim/colors/beautiful.vim
+VIM_THEME_DST      := $(HOME)/$(VIM_THEME_SRC)
+KUBECTL_COMPLETION := $(HOME)/.kubectl_completion
+TERRAFORM_VERS     := 0.12.8
+TERRAFORM_URL      := https://releases.hashicorp.com/terraform/$(TERRAFORM_VERS)
+TERRAFORM_SHA256   := $(TERRAFORM_URL)/terraform_$(TERRAFORM_VERS)_SHA256SUMS
+TERRAFORM_ZIP      := terraform_$(TERRAFORM_VERS)_darwin_amd64.zip
+GO_VERS            := 1.13.4
+GO_URL             := https://dl.google.com/go
+GO_SHA256          := https://golang.org/dl/
+GO_TAR             := go$(GO_VERS).darwin-amd64.tar.gz
 
 # $(call copy-file,FILE_SRC,FILE_DST)
 define copy-file
@@ -49,12 +51,12 @@ endif
 help: ## Show help
 	@echo "Usage: make TARGET\n"
 	@echo "Targets:"
-	@$(AWK) -F ":.* ##" '/^[^#].*:.*##/{printf "%-17s%s\n", $$1, $$2}' \
+	@$(AWK) -F ":.* ##" '/^[^#].*:.*##/{printf "%-21s%s\n", $$1, $$2}' \
 	$(MAKEFILE_LIST) \
 	| grep -v AWK
 
 .PHONY: all
-all: $(BASHRC_DST) $(ZSHRC_DST) $(ZPROFILE_DST) $(TMUX_DST) $(VIM_DST) $(VIM_THEME_DST) terraform go ## Install all
+all: $(BASHRC_DST) $(ZSHRC_DST) $(ZPROFILE_DST) $(TMUX_DST) $(VIM_DST) $(VIM_THEME_DST) $(KUBECTL_COMPLETION) terraform go ## Install all
 
 .PHONY: $(BASHRC_DST)
 $(BASHRC_DST): $(BASHRC_SRC) ## Install .bashrc
@@ -82,6 +84,9 @@ $(VIM_THEME_DST): $(VIM_THEME_SRC) $(HOME)/.vim/colors ## Install VIM theme
 
 $(HOME)/.vim/colors:
 	mkdir -p $@
+
+$(KUBECTL_COMPLETION): ## Install kubectl completion
+	$(KUBECTL) completion zsh > $@
 
 terraform: ## Install Terraform
 	if [ "$$($(CURL) -s $(TERRAFORM_SHA256) | $(AWK) '/darwin_amd64/{print $$1}')" !=  "$$($(SHASUM256) $(TMP)/$(TERRAFORM_ZIP) 2> /dev/null | $(AWK) '{print $$1}')" ]; \
