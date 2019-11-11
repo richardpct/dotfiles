@@ -3,6 +3,7 @@ BIN                := /usr/bin
 OPT_LOCAL          := $(HOME)/opt
 BIN_LOCAL          := $(HOME)/opt/bin
 VPATH              := $(OPT_LOCAL) $(BIN_LOCAL)
+INSTALL            := $(BIN)/install
 AWK                := $(BIN)/awk
 SED                := $(BIN)/sed
 UNZIP              := $(BIN)/unzip
@@ -32,6 +33,10 @@ GO_VERS            := 1.13.4
 GO_URL             := https://dl.google.com/go
 GO_SHA256          := https://golang.org/dl/
 GO_TAR             := go$(GO_VERS).darwin-amd64.tar.gz
+JQ                 := jq-osx-amd64
+JQ_VERS            := 1.6
+JQ_URL             := https://github.com/stedolan/jq/releases/download/jq-$(JQ_VERS)/$(JQ)
+JQ_SHA256          := https://raw.githubusercontent.com/stedolan/jq/master/sig/v$(JQ_VERS)/sha256sum.txt
 
 # $(call copy-file,FILE_SRC,FILE_DST)
 define copy-file
@@ -56,7 +61,7 @@ help: ## Show help
 	| grep -v AWK
 
 .PHONY: all
-all: $(BASHRC_DST) $(ZSHRC_DST) $(ZPROFILE_DST) $(TMUX_DST) $(VIM_DST) $(VIM_THEME_DST) $(KUBECTL_COMPLETION) terraform go ## Install all
+all: $(BASHRC_DST) $(ZSHRC_DST) $(ZPROFILE_DST) $(TMUX_DST) $(VIM_DST) $(VIM_THEME_DST) $(KUBECTL_COMPLETION) terraform go jq ## Install all
 
 .PHONY: $(BASHRC_DST)
 $(BASHRC_DST): $(BASHRC_SRC) ## Install .bashrc
@@ -104,3 +109,15 @@ go: ## Install GO
 	fi
 
 	$(TAR) xzvf $(TMP)/$(GO_TAR) -C $(OPT_LOCAL)
+
+$(JQ): ## Install JQ
+	if [ "$$($(CURL) -s $(JQ_SHA256) | $(AWK) '/$(JQ)/{print $$1}')" != "$$($(SHASUM256) $(BIN_LOCAL)/$(JQ) 2> /dev/null | $(AWK) '{print $$1}')" ]; \
+	then \
+	  $(CURL) -L $(JQ_URL) -o $(TMP)/$(JQ); \
+	fi
+
+	$(INSTALL) -m 0755 $(TMP)/$(JQ) $(BIN_LOCAL)/$(JQ)
+
+jq: $(JQ)
+	cd $(BIN_LOCAL) && \
+	ln -s $< $@
