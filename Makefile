@@ -12,6 +12,10 @@ TMP              := /tmp
 SHASUM256        := shasum -a 256
 BASHRC_SRC       := .bashrc
 BASHRC_DST       := $(HOME)/$(BASHRC_SRC)
+ZSHRC_SRC        := .zshrc
+ZSHRC_DST        := $(HOME)/$(ZSHRC_SRC)
+ZPROFILE_SRC     := .zprofile
+ZPROFILE_DST     := $(HOME)/$(ZPROFILE_SRC)
 TMUX_SRC         := .tmux.conf
 TMUX_DST         := $(HOME)/$(TMUX_SRC)
 VIM_SRC          := .vimrc
@@ -50,10 +54,18 @@ help: ## Show help
 	| grep -v AWK
 
 .PHONY: all
-all: $(BASHRC_DST) $(TMUX_DST) $(VIM_DST) $(VIM_THEME_DST) terraform go ## Install all
+all: $(BASHRC_DST) $(ZSHRC_DST) $(ZPROFILE_DST) $(TMUX_DST) $(VIM_DST) $(VIM_THEME_DST) terraform go ## Install all
 
 .PHONY: $(BASHRC_DST)
 $(BASHRC_DST): $(BASHRC_SRC) ## Install .bashrc
+	$(call copy-file,$<,$@)
+
+.PHONY: $(ZSHRC_DST)
+$(ZSHRC_DST): $(ZSHRC_SRC) ## Install .zshrc
+	$(call copy-file,$<,$@)
+
+.PHONY: $(ZPROFILE_DST)
+$(ZPROFILE_DST): $(ZPROFILE_SRC) ## Install .zprofile
 	$(call copy-file,$<,$@)
 
 .PHONY: $(TMUX_DST)
