@@ -9,6 +9,7 @@ SED                := $(BIN)/sed
 UNZIP              := $(BIN)/unzip
 TAR                := $(BIN)/tar
 CURL               := $(BIN)/curl
+TOUCH              := $(BIN)/touch
 KUBECTL            := /usr/local/bin/kubectl
 TMP                := /tmp
 SHASUM256          := shasum -a 256
@@ -40,6 +41,10 @@ JQ_SHA256          := https://raw.githubusercontent.com/stedolan/jq/master/sig/v
 PIP3               := /usr/bin/pip3
 PIP3_LOCAL         := $(HOME)/Library/Python/3.7/bin/pip3
 AWSCLI             := $(HOME)/Library/Python/3.7/bin/aws
+EKSCTL             := $(BIN_LOCAL)/eksctl
+EKSCTL_URL         := https://github.com/weaveworks/eksctl/releases/download/latest_release
+EKSCTL_TAR         := eksctl_Darwin_amd64.tar.gz
+EKSCTL_SHA256      := $(shell $(CURL) -s -L https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_checksums.txt | $(AWK) '/Darwin/{print $$1}')
 
 # $(call copy-file,FILE_SRC,FILE_DST)
 define copy-file
@@ -64,7 +69,7 @@ help: ## Show help
 	| grep -v AWK
 
 .PHONY: all
-all: $(BASHRC_DST) $(ZSHRC_DST) $(ZPROFILE_DST) $(TMUX_DST) $(VIM_DST) $(VIM_THEME_DST) $(KUBECTL_COMPLETION) terraform go jq $(PIP3_LOCAL) $(AWSCLI) ## Install all
+all: $(BASHRC_DST) $(ZSHRC_DST) $(ZPROFILE_DST) $(TMUX_DST) $(VIM_DST) $(VIM_THEME_DST) $(KUBECTL_COMPLETION) terraform go jq $(PIP3_LOCAL) $(AWSCLI) $(EKSCTL) ## Install all
 
 .PHONY: $(BASHRC_DST)
 $(BASHRC_DST): $(BASHRC_SRC) ## Install .bashrc
@@ -130,3 +135,18 @@ $(PIP3_LOCAL): ## Install Pip3
 
 $(AWSCLI): $(PIP3_LOCAL) ## Install awscli
 	$< install --upgrade --user awscli
+
+$(EKSCTL): $(AWSCLI) ## Install eksctl
+	if [ "$$($(SHASUM256) $(TMP)/$(EKSCTL_TAR) 2> /dev/null | $(AWK) '{print $$1}')" != $(EKSCTL_SHA256) ]; \
+	then \
+	  $(CURL) -L $(EKSCTL_URL)/$(EKSCTL_TAR) -o $(TMP)/$(EKSCTL_TAR); \
+	fi
+
+	if [ "$$($(SHASUM256) $(TMP)/$(EKSCTL_TAR) 2> /dev/null | $(AWK) '{print $$1}')" != "$(EKSCTL_SHA256)" ]; \
+	then \
+	  echo "$(EKSCTL_TAR) is corrupted"; \
+	  exit 1; \
+	fi
+
+	$(TAR) xzvf $(TMP)/$(EKSCTL_TAR) -C $(BIN_LOCAL)
+	$(TOUCH) $(EKSCTL)
