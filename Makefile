@@ -37,6 +37,9 @@ JQ                 := jq-osx-amd64
 JQ_VERS            := 1.6
 JQ_URL             := https://github.com/stedolan/jq/releases/download/jq-$(JQ_VERS)/$(JQ)
 JQ_SHA256          := https://raw.githubusercontent.com/stedolan/jq/master/sig/v$(JQ_VERS)/sha256sum.txt
+PIP3               := /usr/bin/pip3
+PIP3_LOCAL         := $(HOME)/Library/Python/3.7/bin/pip3
+AWSCLI             := $(HOME)/Library/Python/3.7/bin/aws
 
 # $(call copy-file,FILE_SRC,FILE_DST)
 define copy-file
@@ -61,7 +64,7 @@ help: ## Show help
 	| grep -v AWK
 
 .PHONY: all
-all: $(BASHRC_DST) $(ZSHRC_DST) $(ZPROFILE_DST) $(TMUX_DST) $(VIM_DST) $(VIM_THEME_DST) $(KUBECTL_COMPLETION) terraform go jq ## Install all
+all: $(BASHRC_DST) $(ZSHRC_DST) $(ZPROFILE_DST) $(TMUX_DST) $(VIM_DST) $(VIM_THEME_DST) $(KUBECTL_COMPLETION) terraform go jq $(PIP3_LOCAL) $(AWSCLI) ## Install all
 
 .PHONY: $(BASHRC_DST)
 $(BASHRC_DST): $(BASHRC_SRC) ## Install .bashrc
@@ -121,3 +124,9 @@ $(JQ): ## Install JQ
 jq: $(JQ)
 	cd $(BIN_LOCAL) && \
 	ln -s $< $@
+
+$(PIP3_LOCAL): ## Install Pip3
+	$(PIP3) install --upgrade --user pip
+
+$(AWSCLI): $(PIP3_LOCAL) ## Install awscli
+	$< install --upgrade --user awscli
