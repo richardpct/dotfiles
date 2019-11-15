@@ -44,7 +44,6 @@ AWSCLI             := $(HOME)/Library/Python/3.7/bin/aws
 EKSCTL             := $(BIN_LOCAL)/eksctl
 EKSCTL_URL         := https://github.com/weaveworks/eksctl/releases/download/latest_release
 EKSCTL_TAR         := eksctl_Darwin_amd64.tar.gz
-EKSCTL_SHA256      := $(shell $(CURL) -s -L https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_checksums.txt | $(AWK) '/Darwin/{print $$1}')
 
 # $(call copy-file,FILE_SRC,FILE_DST)
 define copy-file
@@ -135,6 +134,8 @@ $(PIP3_LOCAL): ## Install Pip3
 
 $(AWSCLI): $(PIP3_LOCAL) ## Install awscli
 	$< install --upgrade --user awscli
+
+$(EKSCTL): EKSCTL_SHA256 = $(shell $(CURL) -s -L https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_checksums.txt | $(AWK) '/Darwin/{print $$1}')
 
 $(EKSCTL): $(AWSCLI) ## Install eksctl
 	if [ "$$($(SHASUM256) $(TMP)/$(EKSCTL_TAR) 2> /dev/null | $(AWK) '{print $$1}')" != $(EKSCTL_SHA256) ]; \
