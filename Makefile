@@ -135,9 +135,12 @@ $(PIP3_LOCAL): ## Install Pip3
 $(AWSCLI): $(PIP3_LOCAL) ## Install awscli
 	$< install --upgrade --user awscli
 
+.PHONY: eksctl
+eksctl: $(EKSCTL) ## Install eksctl
+
 $(EKSCTL): EKSCTL_SHA256 = $(shell $(CURL) -s -L https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_checksums.txt | $(AWK) '/Darwin/{print $$1}')
 
-$(EKSCTL): $(AWSCLI) ## Install eksctl
+$(EKSCTL): $(AWSCLI)
 	if [ "$$($(SHASUM256) $(TMP)/$(EKSCTL_TAR) 2> /dev/null | $(AWK) '{print $$1}')" != $(EKSCTL_SHA256) ]; \
 	then \
 	  $(CURL) -L $(EKSCTL_URL)/$(EKSCTL_TAR) -o $(TMP)/$(EKSCTL_TAR); \
