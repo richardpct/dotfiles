@@ -9,6 +9,7 @@ fi
 if [ -f ${HOME}/.git-prompt.sh ]; then
   GIT_PS1_SHOWDIRTYSTATE=1
   GIT_PS1_SHOWSTASHSTATE=1
+  GIT_PS1_SHOWUNTRACKEDFILES=1
   source ${HOME}/.git-prompt.sh
   setopt PROMPT_SUBST
   PROMPT='%F{magenta}%~%B%F{magenta}$(__git_ps1 " μ (%s)")%B%F{white} » %b%f'
