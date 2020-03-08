@@ -20,6 +20,8 @@ ZSHRC_SRC          := .zshrc
 ZSHRC_DST          := $(HOME)/$(ZSHRC_SRC)
 ZPROFILE_SRC       := .zprofile
 ZPROFILE_DST       := $(HOME)/$(ZPROFILE_SRC)
+GIT_PROMPT_SRC     := git-prompt.sh
+GIT_PROMPT_DST     := $(HOME)/.$(GIT_PROMPT_SRC)
 TMUX_SRC           := .tmux.conf
 TMUX_DST           := $(HOME)/$(TMUX_SRC)
 VIM_SRC            := .vimrc
@@ -70,9 +72,9 @@ help: ## Show help
 
 .PHONY: all
 ifeq "$(OS)" "Darwin"
-all: bash zsh zprofile tmux vim kubectl terraform go jq pip awscli eksctl ## Install All
+all: bash zsh zprofile gitprompt tmux vim kubectl terraform go jq pip awscli eksctl ## Install All
 else
-all: bash zsh zprofile tmux vim kubectl
+all: bash zsh zprofile gitprompt tmux vim kubectl
 endif
 
 .PHONY: bash
@@ -94,6 +96,13 @@ zprofile: $(ZPROFILE_DST) ## Install .zprofile
 
 .PHONY: $(ZPROFILE_DST)
 $(ZPROFILE_DST): $(ZPROFILE_SRC)
+	$(call copy-file,$<,$@)
+
+.PHONY: gitprompt
+gitprompt: $(GIT_PROMPT_DST) ## Install .git-prompt.sh
+
+.PHONY: $(GIT_PROMPT_DST)
+$(GIT_PROMPT_DST): $(GIT_PROMPT_SRC)
 	$(call copy-file,$<,$@)
 
 .PHONY: tmux
