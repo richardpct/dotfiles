@@ -10,7 +10,7 @@ UNZIP              := $(BIN)/unzip
 TAR                := $(BIN)/tar
 CURL               := $(BIN)/curl
 TOUCH              := $(BIN)/touch
-KUBECTL            := /usr/local/bin/kubectl
+KUBECTL            := kubectl
 TMP                := /tmp
 SHASUM256          := shasum -a 256
 BASHRC_SRC         := .bashrc
@@ -63,42 +63,63 @@ endif
 help: ## Show help
 	@echo "Usage: make TARGET\n"
 	@echo "Targets:"
-	@$(AWK) -F ":.* ##" '/^[^#].*:.*##/{printf "%-21s%s\n", $$1, $$2}' \
+	@$(AWK) -F ":.* ##" '/^[^#].*:.*##/{printf "%-13s%s\n", $$1, $$2}' \
 	$(MAKEFILE_LIST) \
 	| grep -v AWK
 
 .PHONY: all
-all: $(BASHRC_DST) $(ZSHRC_DST) $(ZPROFILE_DST) $(TMUX_DST) $(VIM_DST) $(VIM_THEME_DST) $(KUBECTL_COMPLETION) terraform go jq $(PIP3_LOCAL) $(AWSCLI) $(EKSCTL) ## Install all
+all: bash zsh zprofile tmux vim kubectl terraform go jq pip awscli eksctl ## Install All
+
+.PHONY: bash
+bash: $(BASHRC_DST) ## Install .bashrc
 
 .PHONY: $(BASHRC_DST)
-$(BASHRC_DST): $(BASHRC_SRC) ## Install .bashrc
+$(BASHRC_DST): $(BASHRC_SRC)
 	$(call copy-file,$<,$@)
+
+.PHONY: zsh
+zsh: $(ZSHRC_DST) ## Install .zshrc
 
 .PHONY: $(ZSHRC_DST)
-$(ZSHRC_DST): $(ZSHRC_SRC) ## Install .zshrc
+$(ZSHRC_DST): $(ZSHRC_SRC)
 	$(call copy-file,$<,$@)
+
+.PHONY: zprofile
+zprofile: $(ZPROFILE_DST) ## Install .zprofile
 
 .PHONY: $(ZPROFILE_DST)
-$(ZPROFILE_DST): $(ZPROFILE_SRC) ## Install .zprofile
+$(ZPROFILE_DST): $(ZPROFILE_SRC)
 	$(call copy-file,$<,$@)
+
+.PHONY: tmux
+tmux: $(TMUX_DST) ## Install .tmux.conf
 
 .PHONY: $(TMUX_DST)
-$(TMUX_DST): $(TMUX_SRC) ## Install .tmux.conf
+$(TMUX_DST): $(TMUX_SRC)
 	$(call copy-file,$<,$@)
 
+.PHONY: vim
+vim:  $(VIM_DST) ## Install .vimrc
+
 .PHONY: $(VIM_DST)
-$(VIM_DST): $(VIM_SRC) $(VIM_THEME_DST) ## Install .vimrc
+$(VIM_DST): $(VIM_SRC) $(VIM_THEME_DST)
 	$(call copy-file,$<,$@)
 
 .PHONY: $(VIM_THEME_DST)
-$(VIM_THEME_DST): $(VIM_THEME_SRC) $(HOME)/.vim/colors ## Install VIM theme
+$(VIM_THEME_DST): $(VIM_THEME_SRC) $(HOME)/.vim/colors
 	$(call copy-file,$<,$@)
 
 $(HOME)/.vim/colors:
 	mkdir -p $@
 
-$(KUBECTL_COMPLETION): ## Install kubectl completion
-	$(KUBECTL) completion zsh > $@
+.PHONY: kubectl
+kubectl: $(KUBECTL_COMPLETION) ## Install kubectl completion
+
+$(KUBECTL_COMPLETION):
+	if type kubectl > /dev/null 2>&1; \
+	then \
+	  $(KUBECTL) completion zsh > $@; \
+	fi
 
 terraform: ## Install Terraform
 	if [ "$$($(CURL) -s $(TERRAFORM_SHA256) | $(AWK) '/darwin_amd64/{print $$1}')" !=  "$$($(SHASUM256) $(TMP)/$(TERRAFORM_ZIP) 2> /dev/null | $(AWK) '{print $$1}')" ]; \
@@ -117,7 +138,7 @@ go: ## Install GO
 
 	$(TAR) xzvf $(TMP)/$(GO_TAR) -C $(OPT_LOCAL)
 
-$(JQ): ## Install JQ
+$(JQ):
 	if [ "$$($(CURL) -s $(JQ_SHA256) | $(AWK) '/$(JQ)/{print $$1}')" != "$$($(SHASUM256) $(BIN_LOCAL)/$(JQ) 2> /dev/null | $(AWK) '{print $$1}')" ]; \
 	then \
 	  $(CURL) -L $(JQ_URL) -o $(TMP)/$(JQ); \
@@ -125,14 +146,20 @@ $(JQ): ## Install JQ
 
 	$(INSTALL) -m 0755 $(TMP)/$(JQ) $(BIN_LOCAL)/$(JQ)
 
-jq: $(JQ)
+jq: $(JQ) ## Install JQ
 	cd $(BIN_LOCAL) && \
 	ln -s $< $@
 
-$(PIP3_LOCAL): ## Install Pip3
+.PHONY: pip
+pip: $(PIP3_LOCAL) ## Install Pip3
+
+$(PIP3_LOCAL):
 	$(PIP3) install --upgrade --user pip
 
-$(AWSCLI): $(PIP3_LOCAL) ## Install awscli
+.PHONY: awscli
+awscli: $(AWSCLI) ## Install awscli
+
+$(AWSCLI): $(PIP3_LOCAL)
 	$< install --upgrade --user awscli
 
 .PHONY: eksctl
