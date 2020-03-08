@@ -6,6 +6,8 @@ if [ `uname` = 'Darwin' ]; then
   export LSCOLORS='exfxcxdxcxegedabagacad'
 fi
 
+alias tmux='tmux -u'
+
 if [ -x ${HOME}/opt/bin/make ]; then
   alias make='${HOME}/opt/bin/make'
 fi
