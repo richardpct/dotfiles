@@ -6,17 +6,6 @@ if [ `uname` = 'Darwin' ]; then
   export LSCOLORS='exfxcxdxcxegedabagacad'
 fi
 
-if [ -f ${HOME}/.git-prompt.sh ]; then
-  GIT_PS1_SHOWDIRTYSTATE=1
-  GIT_PS1_SHOWSTASHSTATE=1
-  GIT_PS1_SHOWUNTRACKEDFILES=1
-  source ${HOME}/.git-prompt.sh
-  setopt PROMPT_SUBST
-  PROMPT='%F{magenta}%~%B%F{magenta}$(__git_ps1 " μ (%s)")%B%F{white} » %b%f'
-else
-  PROMPT='%F{magenta}%~ %B%F{white}» %b%f'
-fi
-
 if [ -x ${HOME}/opt/bin/make ]; then
   alias make='${HOME}/opt/bin/make'
 fi
@@ -24,6 +13,18 @@ fi
 if [ -f ${HOME}/.kubectl_completion ]; then
   source ${HOME}/.kubectl_completion
 fi
+
+function precmd() {
+  if [ -f ${HOME}/.git-prompt.sh ]; then
+    GIT_PS1_SHOWDIRTYSTATE=1
+    GIT_PS1_SHOWSTASHSTATE=1
+    GIT_PS1_SHOWUNTRACKEDFILES=1
+    source ${HOME}/.git-prompt.sh
+    __git_ps1 "%F{magenta}%~%B%F{magenta}" "%b%F{white} » %b%f" " (%s)"
+  else
+    PROMPT='%F{magenta}%~ %B%F{white}» %b%f'
+  fi
+}
 
 function gimp {
   DOCKER_GIMP_REPO="${HOME}/github/docker-gimp"
