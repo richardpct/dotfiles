@@ -1,4 +1,5 @@
 .DEFAULT_GOAL      := help
+OS                 := $(shell uname)
 BIN                := /usr/bin
 OPT_LOCAL          := $(HOME)/opt
 BIN_LOCAL          := $(HOME)/opt/bin
@@ -68,7 +69,11 @@ help: ## Show help
 	| grep -v AWK
 
 .PHONY: all
+ifeq "$(OS)" "Darwin"
 all: bash zsh zprofile tmux vim kubectl terraform go jq pip awscli eksctl ## Install All
+else
+all: bash zsh zprofile tmux vim kubectl
+endif
 
 .PHONY: bash
 bash: $(BASHRC_DST) ## Install .bashrc
