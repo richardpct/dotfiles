@@ -505,8 +505,8 @@ __git_ps1 ()
 		if [ -n "${GIT_PS1_SHOWDIRTYSTATE-}" ] &&
 		   [ "$(git config --bool bash.showDirtyState)" != "false" ]
 		then
-			git diff --no-ext-diff --quiet || w="*"
-			git diff --no-ext-diff --cached --quiet || i="+"
+			git diff --no-ext-diff --quiet || w="✗"
+			git diff --no-ext-diff --cached --quiet || i="✓"
 			if [ -z "$short_sha" ] && [ -z "$i" ]; then
 				i="#"
 			fi
@@ -521,7 +521,7 @@ __git_ps1 ()
 		   [ "$(git config --bool bash.showUntrackedFiles)" != "false" ] &&
 		   git ls-files --others --exclude-standard --directory --no-empty-directory --error-unmatch -- ':/*' >/dev/null 2>/dev/null
 		then
-			u="%${ZSH_VERSION+%}"
+			u="○${ZSH_VERSION+%}"
 		fi
 
 		if [ -n "${GIT_PS1_SHOWUPSTREAM-}" ]; then
