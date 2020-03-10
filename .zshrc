@@ -16,13 +16,19 @@ if [ -f ${HOME}/.kubectl_completion ]; then
   source ${HOME}/.kubectl_completion
 fi
 
+function kube_prompt() {
+  if kubectl config current-context > /dev/null 2>&1; then
+    printf '☸ '
+  fi
+}
+
 function precmd() {
   if [ -f ${HOME}/.git-prompt.sh ]; then
     GIT_PS1_SHOWDIRTYSTATE=1
     GIT_PS1_SHOWSTASHSTATE=1
     GIT_PS1_SHOWUNTRACKEDFILES=1
     source ${HOME}/.git-prompt.sh
-    __git_ps1 "%F{magenta}%~%B%F{magenta}" "%b%F{white} » %b%f" " (%s)"
+    __git_ps1 "%B%F{cyan}$(kube_prompt)%b%F{magenta}%~%B%F{magenta}" "%b%F{white} » %b%f" " (%s)"
   else
     PROMPT='%F{magenta}%~ %B%F{white}» %b%f'
   fi
