@@ -7,6 +7,7 @@ if [ `uname` = 'Darwin' ]; then
 fi
 
 alias tmux='tmux -u'
+alias grep='grep --color'
 
 if [ -x ${HOME}/opt/bin/make ]; then
   alias make='${HOME}/opt/bin/make'
