@@ -14,8 +14,6 @@ TOUCH              := $(BIN)/touch
 KUBECTL            := kubectl
 TMP                := /tmp
 SHASUM256          := shasum -a 256
-BASHRC_SRC         := .bashrc
-BASHRC_DST         := $(HOME)/$(BASHRC_SRC)
 ZSHRC_SRC          := .zshrc
 ZSHRC_DST          := $(HOME)/$(ZSHRC_SRC)
 ZPROFILE_SRC       := .zprofile
@@ -72,13 +70,10 @@ help: ## Show help
 
 .PHONY: all
 ifeq "$(OS)" "Darwin"
-all: bash zsh zprofile gitprompt tmux vim kubectl terraform go jq pip awscli eksctl ## Install All
+all: zsh zprofile gitprompt tmux vim kubectl terraform go jq pip awscli eksctl ## Install All
 else
-all: bash zsh zprofile gitprompt tmux vim kubectl
+all: zsh zprofile gitprompt tmux vim kubectl
 endif
-
-.PHONY: bash
-bash: $(BASHRC_DST) ## Install .bashrc
 
 .PHONY: $(BASHRC_DST)
 $(BASHRC_DST): $(BASHRC_SRC)

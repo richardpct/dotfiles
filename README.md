@@ -10,9 +10,6 @@ I wrote a Makefile to handle all, the syntax is as follows:
 ## Getting Help
     $ make help
 
-## Installing my .bashrc
-    $ make bashrc
-
 ## Installing my .zshrc
     $ make zshrc
 
