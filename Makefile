@@ -16,8 +16,8 @@ TMP                := /tmp
 SHASUM256          := shasum -a 256
 ZSHRC_SRC          := .zshrc
 ZSHRC_DST          := $(HOME)/$(ZSHRC_SRC)
-ZPROFILE_SRC       := .zprofile
-ZPROFILE_DST       := $(HOME)/$(ZPROFILE_SRC)
+ZSHENV_SRC         := .zshenv
+ZSHENV_DST         := $(HOME)/$(ZSHENV_SRC)
 GIT_PROMPT_SRC     := git-prompt.sh
 GIT_PROMPT_DST     := $(HOME)/.$(GIT_PROMPT_SRC)
 TMUX_SRC           := .tmux.conf
@@ -70,9 +70,9 @@ help: ## Show help
 
 .PHONY: all
 ifeq "$(OS)" "Darwin"
-all: zsh zprofile gitprompt tmux vim kubectl terraform go jq pip awscli eksctl ## Install All
+all: zsh zshenv gitprompt tmux vim kubectl terraform go jq pip awscli eksctl ## Install All
 else
-all: zsh zprofile gitprompt tmux vim kubectl
+all: zsh zshenv gitprompt tmux vim kubectl
 endif
 
 .PHONY: $(BASHRC_DST)
@@ -86,11 +86,11 @@ zsh: $(ZSHRC_DST) ## Install .zshrc
 $(ZSHRC_DST): $(ZSHRC_SRC)
 	$(call copy-file,$<,$@)
 
-.PHONY: zprofile
-zprofile: $(ZPROFILE_DST) ## Install .zprofile
+.PHONY: zshenv
+zshenv: $(ZSHENV_DST) ## Install .zshenv
 
-.PHONY: $(ZPROFILE_DST)
-$(ZPROFILE_DST): $(ZPROFILE_SRC)
+.PHONY: $(ZSHENV_DST)
+$(ZSHENV_DST): $(ZSHENV_SRC)
 	$(call copy-file,$<,$@)
 
 .PHONY: gitprompt
