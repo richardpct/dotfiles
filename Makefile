@@ -103,6 +103,7 @@ ifeq "$(OS)" "Darwin"
 	sh -c "$$(curl -fsSL $(OHMYZSH_URL))"
 else
 	echo "n" | sh -c "$$(curl -fsSL $(OHMYZSH_URL))"
+endif
 
 $(OHMYZSH_THEME_DST): $(OHMYZSH_THEME_SRC)
 	$(call copy-file,$<,$@)
