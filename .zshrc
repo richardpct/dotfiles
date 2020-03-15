@@ -11,6 +11,7 @@ fi
 
 alias tmux='tmux -u'
 alias grep='grep --color'
+alias ubuntu='docker run -it --rm ubuntu /bin/bash'
 
 if [ -x ${HOME}/opt/bin/make ]; then
   alias make='${HOME}/opt/bin/make'
