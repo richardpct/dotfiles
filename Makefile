@@ -78,7 +78,7 @@ all: zsh tmux vim kubectl
 endif
 
 .PHONY: zsh
-zsh: zshenv ohmyzsh $(ZSHRC_DST) ## Install .zshrc
+zsh: zshenv ohmyzsh $(OHMYZSH_THEME_DST) $(ZSHRC_DST) ## Install .zshrc
 
 .PHONY: $(ZSHRC_DST)
 $(ZSHRC_DST): $(ZSHRC_SRC)
