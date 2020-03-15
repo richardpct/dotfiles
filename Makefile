@@ -99,7 +99,10 @@ $(ZSHENV_DST): $(ZSHENV_SRC)
 ohmyzsh: $(OHMYZSH_DST) $(OHMYZSH_THEME_DST) ## Install ohmyzsh
 
 $(OHMYZSH_DST):
+ifeq "$(OS)" "Darwin"
 	sh -c "$$(curl -fsSL $(OHMYZSH_URL))"
+else
+	echo "n" | sh -c "$$(curl -fsSL $(OHMYZSH_URL))"
 
 $(OHMYZSH_THEME_DST): $(OHMYZSH_THEME_SRC)
 	$(call copy-file,$<,$@)
