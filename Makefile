@@ -28,6 +28,8 @@ VIM_SRC            := .vimrc
 VIM_DST            := $(HOME)/$(VIM_SRC)
 VIM_THEME_SRC      := .vim/colors/beautiful.vim
 VIM_THEME_DST      := $(HOME)/$(VIM_THEME_SRC)
+K8S_STATUS_SRC     := k8s-status.sh
+K8S_STATUS_DST     := $(HOME)/$(K8S_STATUS_SRC)
 KUBECTL_COMPLETION := $(HOME)/.kubectl_completion
 TERRAFORM_VERS     := 0.12.16
 TERRAFORM_URL      := https://releases.hashicorp.com/terraform/$(TERRAFORM_VERS)
@@ -104,8 +106,11 @@ endif
 $(OHMYZSH_THEME_DST): $(OHMYZSH_THEME_SRC)
 	$(call copy-file,$<,$@)
 
+$(K8S_STATUS_DST): $(K8S_STATUS_SRC)
+	$(call copy-file,$<,$@)
+
 .PHONY: tmux
-tmux: $(TMUX_DST) ## Install .tmux.conf
+tmux: $(K8S_STATUS_DST) $(TMUX_DST) ## Install .tmux.conf
 
 .PHONY: $(TMUX_DST)
 $(TMUX_DST): $(TMUX_SRC)
