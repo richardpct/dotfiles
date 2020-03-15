@@ -72,17 +72,13 @@ help: ## Show help
 
 .PHONY: all
 ifeq "$(OS)" "Darwin"
-all: zsh zshenv ohmyzsh tmux vim kubectl terraform go jq pip awscli eksctl ## Install All
+all: zsh tmux vim kubectl terraform go jq pip awscli eksctl ## Install All
 else
-all: zsh zshenv ohmyzsh tmux vim kubectl
+all: zsh tmux vim kubectl
 endif
 
-.PHONY: $(BASHRC_DST)
-$(BASHRC_DST): $(BASHRC_SRC)
-	$(call copy-file,$<,$@)
-
 .PHONY: zsh
-zsh: $(ZSHRC_DST) ## Install .zshrc
+zsh: zshenv ohmyzsh $(ZSHRC_DST) ## Install .zshrc
 
 .PHONY: $(ZSHRC_DST)
 $(ZSHRC_DST): $(ZSHRC_SRC)
@@ -96,7 +92,7 @@ $(ZSHENV_DST): $(ZSHENV_SRC)
 	$(call copy-file,$<,$@)
 
 .PHONY: ohmyzsh
-ohmyzsh: $(OHMYZSH_DST) $(OHMYZSH_THEME_DST) ## Install ohmyzsh
+ohmyzsh: $(OHMYZSH_DST) ## Install ohmyzsh
 
 $(OHMYZSH_DST):
 ifeq "$(OS)" "Darwin"
@@ -147,7 +143,7 @@ terraform: ## Install Terraform
 	cd $(BIN_LOCAL) && \
 	$(UNZIP) $(TMP)/$(TERRAFORM_ZIP)
 
-go: ## Install GO
+go: ## Install Go
 	if [ "$$($(SHASUM256) $(TMP)/$(GO_TAR) 2> /dev/null | $(AWK) '{print $$1}')" != "$$($(CURL) -s $(GO_SHA256) | $(AWK) 'BEGIN{RS = '\n\n'}/go1.12.7.darwin-amd64.tar.gz/{ print }' | $(SED) -n -e 's/ *<td><tt>\(.*\)<\/tt><\/td>/\1/p')" ]; \
 	then \
 	  $(CURL) $(GO_URL)/$(GO_TAR) -o $(TMP)/$(GO_TAR); \
@@ -163,12 +159,12 @@ $(JQ):
 
 	$(INSTALL) -m 0755 $(TMP)/$(JQ) $(BIN_LOCAL)/$(JQ)
 
-jq: $(JQ) ## Install JQ
+jq: $(JQ) ## Install jq
 	cd $(BIN_LOCAL) && \
 	ln -s $< $@
 
 .PHONY: pip
-pip: $(PIP3_LOCAL) ## Install Pip3
+pip: $(PIP3_LOCAL) ## Install pip3
 
 $(PIP3_LOCAL):
 	$(PIP3) install --upgrade --user pip
