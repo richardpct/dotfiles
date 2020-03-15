@@ -18,8 +18,10 @@ ZSHRC_SRC          := .zshrc
 ZSHRC_DST          := $(HOME)/$(ZSHRC_SRC)
 ZSHENV_SRC         := .zshenv
 ZSHENV_DST         := $(HOME)/$(ZSHENV_SRC)
-GIT_PROMPT_SRC     := git-prompt.sh
-GIT_PROMPT_DST     := $(HOME)/.$(GIT_PROMPT_SRC)
+OHMYZSH_URL        := https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+OHMYZSH_DST        := $(HOME)/.oh-my-zsh
+OHMYZSH_THEME_SRC  := richardpct.zsh-theme
+OHMYZSH_THEME_DST  := $(HOME)/.oh-my-zsh/themes/$(OHMYZSH_THEME_SRC)
 TMUX_SRC           := .tmux.conf
 TMUX_DST           := $(HOME)/$(TMUX_SRC)
 VIM_SRC            := .vimrc
@@ -70,9 +72,9 @@ help: ## Show help
 
 .PHONY: all
 ifeq "$(OS)" "Darwin"
-all: zsh zshenv gitprompt tmux vim kubectl terraform go jq pip awscli eksctl ## Install All
+all: zsh zshenv ohmyzsh tmux vim kubectl terraform go jq pip awscli eksctl ## Install All
 else
-all: zsh zshenv gitprompt tmux vim kubectl
+all: zsh zshenv ohmyzsh tmux vim kubectl
 endif
 
 .PHONY: $(BASHRC_DST)
@@ -93,11 +95,13 @@ zshenv: $(ZSHENV_DST) ## Install .zshenv
 $(ZSHENV_DST): $(ZSHENV_SRC)
 	$(call copy-file,$<,$@)
 
-.PHONY: gitprompt
-gitprompt: $(GIT_PROMPT_DST) ## Install .git-prompt.sh
+.PHONY: ohmyzsh
+ohmyzsh: $(OHMYZSH_DST) $(OHMYZSH_THEME_DST) ## Install ohmyzsh
 
-.PHONY: $(GIT_PROMPT_DST)
-$(GIT_PROMPT_DST): $(GIT_PROMPT_SRC)
+$(OHMYZSH_DST):
+	sh -c "$$(curl -fsSL $(OHMYZSH_URL))"
+
+$(OHMYZSH_THEME_DST): $(OHMYZSH_THEME_SRC)
 	$(call copy-file,$<,$@)
 
 .PHONY: tmux

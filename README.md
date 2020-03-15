@@ -5,7 +5,7 @@ Here are my configuration files and some programs that I use on my MacBook
 * MacOS
 
 # Usage
-I wrote a Makefile to handle all, the syntax is as follows:
+I wrote a Makefile to manage all, the syntax is as follows:
 
 ## Getting Help
     $ make help
@@ -13,8 +13,8 @@ I wrote a Makefile to handle all, the syntax is as follows:
 ## Installing my .zshrc
     $ make zshrc
 
-## Installing my .git-prompt.sh
-    $ make gitprompt
+## Installing ohmyzsh
+    $ make ohmyzsh
 
 ## Installing my .tmux.conf
     $ make tmux
