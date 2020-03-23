@@ -1,4 +1,5 @@
 :syntax on
+:autocmd BufNewFile,BufRead *.zsh-theme set syntax=zsh
 :colorscheme beautiful
 :set number
 :set list
