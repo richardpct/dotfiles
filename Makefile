@@ -103,9 +103,11 @@ else
 	echo "n" | sh -c "$$(curl -fsSL $(OHMYZSH_URL))"
 endif
 
+.PHONY: $(OHMYZSH_THEME_DST)
 $(OHMYZSH_THEME_DST): $(OHMYZSH_THEME_SRC)
 	$(call copy-file,$<,$@)
 
+.PHONY: $(K8S_STATUS_DST)
 $(K8S_STATUS_DST): $(K8S_STATUS_SRC)
 	$(call copy-file,$<,$@)
 
