@@ -15,7 +15,7 @@ GIT_BEHIND_REMOTE_COLOR=%{$fg_bold[magenta]%}
 PROMPT='$(prompt_docker)%{$PROMPT_DIR_COLOR%}%~%{$reset_color%} $(git_prompt_info)$(git_remote_status)%{$reset_color%}'
 PROMPT+="%(?:%{$PROMPT_SUCCESS_COLOR%}» %{$reset_color%}:%{$PROMPT_FAILURE_COLOR%}» %{$reset_color%})"
 
-ZSH_THEME_GIT_PROMPT_PREFIX="%{$GIT_BRANCH_COLOR%}"
+ZSH_THEME_GIT_PROMPT_PREFIX="%{$GIT_BRANCH_COLOR%}ᚶ "
 ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}"
 ZSH_THEME_GIT_PROMPT_DIRTY="%{$GIT_DIRTY_COLOR%} ✘ "
 ZSH_THEME_GIT_PROMPT_CLEAN=" "
