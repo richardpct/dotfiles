@@ -28,6 +28,8 @@ VIM_SRC            := .vimrc
 VIM_DST            := $(HOME)/$(VIM_SRC)
 VIM_THEME_SRC      := .vim/colors/beautiful.vim
 VIM_THEME_DST      := $(HOME)/$(VIM_THEME_SRC)
+VIM_GO_REPO        := https://github.com/fatih/vim-go.git
+VIM_GO_DST         := $(HOME)/.vim/pack/plugins/start/vim-go
 K8S_STATUS_SRC     := k8s-status.sh
 K8S_STATUS_DST     := $(HOME)/$(K8S_STATUS_SRC)
 KUBECTL_COMPLETION := $(HOME)/.kubectl_completion
@@ -122,7 +124,7 @@ $(TMUX_DST): $(TMUX_SRC)
 vim:  $(VIM_DST) ## Install .vimrc
 
 .PHONY: $(VIM_DST)
-$(VIM_DST): $(VIM_SRC) $(VIM_THEME_DST)
+$(VIM_DST): $(VIM_SRC) $(VIM_THEME_DST) $(VIM_GO_DST)
 	$(call copy-file,$<,$@)
 
 .PHONY: $(VIM_THEME_DST)
@@ -131,6 +133,9 @@ $(VIM_THEME_DST): $(VIM_THEME_SRC) $(HOME)/.vim/colors
 
 $(HOME)/.vim/colors:
 	mkdir -p $@
+
+$(VIM_GO_DST):
+	git clone $(VIM_GO_REPO) $@
 
 .PHONY: kubectl
 kubectl: $(KUBECTL_COMPLETION) ## Install kubectl completion

@@ -7,3 +7,4 @@
 :hi SpecialKey ctermfg=6
 :set lcs=eol:$,tab:\|.
 :set cc=80
+:filetype plugin indent on
