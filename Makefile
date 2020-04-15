@@ -30,6 +30,7 @@ VIM_THEME_SRC      := .vim/colors/beautiful.vim
 VIM_THEME_DST      := $(HOME)/$(VIM_THEME_SRC)
 VIM_GO_REPO        := https://github.com/fatih/vim-go.git
 VIM_GO_DST         := $(HOME)/.vim/pack/plugins/start/vim-go
+VIM_RAINBOW_REPO   := https://github.com/luochen1990/rainbow
 K8S_STATUS_SRC     := k8s-status.sh
 K8S_STATUS_DST     := $(HOME)/$(K8S_STATUS_SRC)
 KUBECTL_COMPLETION := $(HOME)/.kubectl_completion
@@ -128,7 +129,7 @@ $(VIM_DST): $(VIM_SRC) $(VIM_THEME_DST) $(VIM_GO_DST)
 	$(call copy-file,$<,$@)
 
 .PHONY: $(VIM_THEME_DST)
-$(VIM_THEME_DST): $(VIM_THEME_SRC) $(HOME)/.vim/colors
+$(VIM_THEME_DST): $(VIM_THEME_SRC) $(HOME)/.vim/colors $(HOME)/.vim/plugin/rainbow_main.vim
 	$(call copy-file,$<,$@)
 
 $(HOME)/.vim/colors:
@@ -136,6 +137,23 @@ $(HOME)/.vim/colors:
 
 $(VIM_GO_DST):
 	git clone $(VIM_GO_REPO) $@
+
+$(HOME)/.vim/plugin/rainbow_main.vim:
+	if [ ! -d $(HOME)/.vim/plugin ]; \
+	then \
+		mkdir -p $(HOME)/.vim/plugin; \
+	fi
+
+	if [ ! -d $(HOME)/.vim/autoload ]; \
+	then \
+		mkdir -p $(HOME)/.vim/autoload; \
+	fi
+
+	rm -rfv /tmp/rainbow
+	git clone $(VIM_RAINBOW_REPO) /tmp/rainbow
+	cp -v /tmp/rainbow/plugin/rainbow_main.vim $@
+	cp -v /tmp/rainbow/autoload/rainbow_main.vim $(HOME)/.vim/autoload/rainbow_main.vim
+	cp -v /tmp/rainbow/autoload/rainbow.vim $(HOME)/.vim/autoload/rainbow.vim
 
 .PHONY: kubectl
 kubectl: $(KUBECTL_COMPLETION) ## Install kubectl completion
