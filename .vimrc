@@ -1,5 +1,6 @@
 :syntax on
 :autocmd BufNewFile,BufRead *.zsh-theme set syntax=zsh
+:autocmd BufNewFile,BufRead *.toml set syntax=dosini
 :colorscheme beautiful
 :set number
 :set list
