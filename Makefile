@@ -3,7 +3,8 @@ OS                 := $(shell uname)
 BIN                := /usr/bin
 OPT_LOCAL          := $(HOME)/opt
 BIN_LOCAL          := $(HOME)/opt/bin
-VPATH              := $(OPT_LOCAL) $(BIN_LOCAL)
+MACPORTS_BIN       := $(HOME)/macports/bin
+VPATH              := $(OPT_LOCAL) $(BIN_LOCAL) $(MACPORTS_BIN)
 INSTALL            := $(BIN)/install
 AWK                := $(BIN)/awk
 SED                := $(BIN)/sed
@@ -52,6 +53,9 @@ AWSCLI             := $(HOME)/Library/Python/3.7/bin/aws
 EKSCTL             := $(BIN_LOCAL)/eksctl
 EKSCTL_URL         := https://github.com/weaveworks/eksctl/releases/download/latest_release
 EKSCTL_TAR         := eksctl_Darwin_amd64.tar.gz
+MACPORTS_VERS      := 2.6.4
+MACPORTS_URL       := https://distfiles.macports.org/MacPorts
+MACPORTS_TAR       := MacPorts-$(MACPORTS_VERS).tar.gz
 
 # $(call copy-file,FILE_SRC,FILE_DST)
 define copy-file
@@ -224,3 +228,27 @@ $(EKSCTL): $(AWSCLI)
 
 	$(TAR) xzvf $(TMP)/$(EKSCTL_TAR) -C $(BIN_LOCAL)
 	$(TOUCH) $(EKSCTL)
+
+.PHONY: macports
+macports: $(MACPORTS_BIN)/port ## Install MacPorts
+
+$(MACPORTS_BIN)/port: MACPORTS_SHA256 = $(shell $(CURL) -s -L $(MACPORTS_URL)/MacPorts-$(MACPORTS_VERS).chk.txt | $(AWK) '/^SHA256.*\.tar\.gz/{print $$2}')
+
+$(MACPORTS_BIN)/port:
+	if [ "$$($(SHASUM256) $(TMP)/$(MACPORTS_TAR) 2> /dev/null | $(AWK) '{print $$1}')" != $(MACPORTS_SHA256) ]; \
+	then \
+	  $(CURL) -L $(MACPORTS_URL)/$(MACPORTS_TAR) -o $(TMP)/$(MACPORTS_TAR); \
+	fi
+
+	if [ "$$($(SHASUM256) $(TMP)/$(MACPORTS_TAR) 2> /dev/null | $(AWK) '{print $$1}')" != "$(MACPORTS_SHA256)" ]; \
+	then \
+	  echo "$(MACPORTS_TAR) is corrupted"; \
+	  exit 1; \
+	fi
+
+	$(TAR) xzvf $(TMP)/$(MACPORTS_TAR) -C $(TMP)
+
+	cd $(TMP)/MacPorts-$(MACPORTS_VERS) && \
+		./configure --prefix=$(HOME)/macports --with-no-root-privileges && \
+		make && \
+		make install
