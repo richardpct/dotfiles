@@ -33,7 +33,7 @@ VIM_RAINBOW_REPO   := https://github.com/luochen1990/rainbow
 K8S_STATUS_SRC     := k8s-status.sh
 K8S_STATUS_DST     := $(HOME)/$(K8S_STATUS_SRC)
 KUBECTL_COMPLETION := $(HOME)/.kubectl_completion
-MACPORTS_VERS      := 2.6.4
+MACPORTS_VERS      := 2.7.1
 MACPORTS_URL       := https://distfiles.macports.org/MacPorts
 MACPORTS_TAR       := MacPorts-$(MACPORTS_VERS).tar.gz
 
