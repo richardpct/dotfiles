@@ -55,7 +55,7 @@ help: ## Show help
 
 .PHONY: all
 ifeq "$(OS)" "Darwin"
-all: zsh tmux vim kubectl macports ## Install All
+all: zsh tmux vim kubectl ## Install All
 else
 all: zsh tmux vim kubectl
 endif
@@ -103,7 +103,11 @@ $(TMUX_DST): $(TMUX_SRC)
 vim:  $(VIM_DST) ## Install .vimrc
 
 .PHONY: $(VIM_DST)
+ifeq "$(OS)" "Linux"
+$(VIM_DST): $(VIM_SRC) $(VIM_THEME_DST)
+else
 $(VIM_DST): $(VIM_SRC) $(VIM_THEME_DST) $(VIM_GO_DST)
+endif
 	$(call copy-file,$<,$@)
 
 .PHONY: $(VIM_THEME_DST)
