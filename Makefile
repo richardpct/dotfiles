@@ -113,8 +113,11 @@ $(VIM_THEME_DST): $(VIM_THEME_SRC) $(HOME)/.vim/colors $(HOME)/.vim/plugin/rainb
 $(HOME)/.vim/colors:
 	mkdir -p $@
 
+# Because the vim version is too old on Slackware
+ifneq "$(OS)" "Linux"
 $(VIM_GO_DST):
 	git clone $(VIM_GO_REPO) $@
+endif
 
 $(HOME)/.vim/plugin/rainbow_main.vim:
 	if [ ! -d $(HOME)/.vim/plugin ]; \
