@@ -2,7 +2,7 @@ set-option -g prefix C-a
 unbind-key C-b
 bind-key a send-prefix
 
-set-window-option -g mode-keys vi
+#set-window-option -g mode-keys vi
 #bind-key -T copy-mode-vi 'v' send -X begin-selection
 #bind-key -T copy-mode-vi 'y' send -X copy-selection
 #bind-key -T copy-mode-vi 'Space' send -X halfpage-down
