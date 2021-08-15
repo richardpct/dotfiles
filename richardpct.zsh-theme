@@ -6,7 +6,7 @@ function prompt_docker {
 
 function remote_host {
   if [ -v SSH_TTY ]; then
-    printf @$(hostname)
+    printf "@$(hostname) "
   fi
 }
 
@@ -19,7 +19,7 @@ GIT_DIRTY_COLOR=%{$fg_bold[magenta]%}
 GIT_AHEAD_REMOTE_COLOR=%{$fg_bold[magenta]%}
 GIT_BEHIND_REMOTE_COLOR=%{$fg_bold[magenta]%}
 
-PROMPT='$(prompt_docker)%{$PROMPT_REMOTEHOST_COLOR%}$(remote_host)%{$PROMPT_DIR_COLOR%} %~%{$reset_color%} $(git_prompt_info)$(git_remote_status)%{$reset_color%}'
+PROMPT='$(prompt_docker)%{$PROMPT_REMOTEHOST_COLOR%}$(remote_host)%{$PROMPT_DIR_COLOR%}%~%{$reset_color%} $(git_prompt_info)$(git_remote_status)%{$reset_color%}'
 PROMPT+="%(?:%{$PROMPT_SUCCESS_COLOR%}» %{$reset_color%}:%{$PROMPT_FAILURE_COLOR%}» %{$reset_color%})"
 
 ZSH_THEME_GIT_PROMPT_PREFIX="%{$GIT_BRANCH_COLOR%}ᚶ "
