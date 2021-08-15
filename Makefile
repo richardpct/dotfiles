@@ -21,8 +21,12 @@ OHMYZSH_URL        := https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/instal
 OHMYZSH_DST        := $(HOME)/.oh-my-zsh
 OHMYZSH_THEME_SRC  := richardpct.zsh-theme
 OHMYZSH_THEME_DST  := $(HOME)/.oh-my-zsh/themes/$(OHMYZSH_THEME_SRC)
+ifeq "$(origin SSH_TTY)" "undefined"
 TMUX_SRC           := .tmux.conf
-TMUX_DST           := $(HOME)/$(TMUX_SRC)
+else
+TMUX_SRC           := .tmux_remote.conf
+endif
+TMUX_DST           := $(HOME)/.tmux.conf
 VIM_SRC            := .vimrc
 VIM_DST            := $(HOME)/$(VIM_SRC)
 VIM_THEME_SRC      := .vim/colors/beautiful.vim
