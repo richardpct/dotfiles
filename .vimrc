@@ -1,5 +1,6 @@
 :syntax on
 :set nobackup
+:set mouse=
 :set tabstop=4
 :autocmd BufNewFile,BufRead *.zsh-theme set syntax=zsh
 :autocmd BufNewFile,BufRead *.toml set syntax=dosini
