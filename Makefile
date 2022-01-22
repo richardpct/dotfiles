@@ -1,8 +1,6 @@
 .DEFAULT_GOAL      := help
 OS                 := $(shell uname)
 BIN                := /usr/bin
-MACPORTS_BIN       := $(HOME)/macports/bin
-VPATH              := $(MACPORTS_BIN)
 INSTALL            := $(BIN)/install
 AWK                := $(BIN)/awk
 SED                := $(BIN)/sed
@@ -37,9 +35,6 @@ VIM_RAINBOW_REPO   := https://github.com/luochen1990/rainbow
 K8S_STATUS_SRC     := k8s-status.sh
 K8S_STATUS_DST     := $(HOME)/$(K8S_STATUS_SRC)
 KUBECTL_COMPLETION := $(HOME)/.kubectl_completion
-MACPORTS_VERS      := 2.7.1
-MACPORTS_URL       := https://distfiles.macports.org/MacPorts
-MACPORTS_TAR       := MacPorts-$(MACPORTS_VERS).tar.gz
 
 # $(call copy-file,FILE_SRC,FILE_DST)
 define copy-file
@@ -152,27 +147,3 @@ $(KUBECTL_COMPLETION):
 	then \
 	  $(KUBECTL) completion zsh > $@; \
 	fi
-
-.PHONY: macports
-macports: $(MACPORTS_BIN)/port ## Install MacPorts
-
-$(MACPORTS_BIN)/port: MACPORTS_SHA256 = $(shell $(CURL) -s -L $(MACPORTS_URL)/MacPorts-$(MACPORTS_VERS).chk.txt | $(AWK) '/^SHA256.*\.tar\.gz/{print $$2}')
-
-$(MACPORTS_BIN)/port:
-	if [ "$$($(SHASUM256) $(TMP)/$(MACPORTS_TAR) 2> /dev/null | $(AWK) '{print $$1}')" != $(MACPORTS_SHA256) ]; \
-	then \
-	  $(CURL) -L $(MACPORTS_URL)/$(MACPORTS_TAR) -o $(TMP)/$(MACPORTS_TAR); \
-	fi
-
-	if [ "$$($(SHASUM256) $(TMP)/$(MACPORTS_TAR) 2> /dev/null | $(AWK) '{print $$1}')" != "$(MACPORTS_SHA256)" ]; \
-	then \
-	  echo "$(MACPORTS_TAR) is corrupted"; \
-	  exit 1; \
-	fi
-
-	$(TAR) xzvf $(TMP)/$(MACPORTS_TAR) -C $(TMP)
-
-	cd $(TMP)/MacPorts-$(MACPORTS_VERS) && \
-		./configure --prefix=$(HOME)/macports --with-no-root-privileges && \
-		make && \
-		make install
