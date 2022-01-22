@@ -4,6 +4,10 @@ ZSH_THEME="richardpct"
 plugins=(git)
 source $ZSH/oh-my-zsh.sh
 
+if [ `uname -m` = 'arm64' ] && [ -f /usr/local/bin/brew ]; then
+  PATH=/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin
+fi
+
 if [ `uname` = 'Darwin' ]; then
   export CLICOLOR=1
   export LSCOLORS='exfxcxdxcxegedabagacad'
