@@ -25,6 +25,8 @@ else
 TMUX_SRC           := .tmux_remote.conf
 endif
 TMUX_DST           := $(HOME)/.tmux.conf
+TMUX_STATUS_SRC    := tmux_bar_status.sh
+TMUX_STATUS_DST    := $(HOME)/$(TMUX_STATUS_SRC)
 VIM_SRC            := .vimrc
 VIM_DST            := $(HOME)/$(VIM_SRC)
 VIM_THEME_SRC      := .vim/colors/beautiful.vim
@@ -32,8 +34,6 @@ VIM_THEME_DST      := $(HOME)/$(VIM_THEME_SRC)
 VIM_GO_REPO        := https://github.com/fatih/vim-go.git
 VIM_GO_DST         := $(HOME)/.vim/pack/plugins/start/vim-go
 VIM_RAINBOW_REPO   := https://github.com/luochen1990/rainbow
-K8S_STATUS_SRC     := k8s-status.sh
-K8S_STATUS_DST     := $(HOME)/$(K8S_STATUS_SRC)
 KUBECTL_COMPLETION := $(HOME)/.kubectl_completion
 
 # $(call copy-file,FILE_SRC,FILE_DST)
@@ -87,12 +87,12 @@ endif
 $(OHMYZSH_THEME_DST): $(OHMYZSH_THEME_SRC)
 	$(call copy-file,$<,$@)
 
-.PHONY: $(K8S_STATUS_DST)
-$(K8S_STATUS_DST): $(K8S_STATUS_SRC)
+.PHONY: $(TMUX_STATUS_DST)
+$(TMUX_STATUS_DST): $(TMUX_STATUS_SRC)
 	$(call copy-file,$<,$@)
 
 .PHONY: tmux
-tmux: $(K8S_STATUS_DST) $(TMUX_DST) ## Install .tmux.conf
+tmux: $(TMUX_STATUS_DST) $(TMUX_DST) ## Install .tmux.conf
 
 .PHONY: $(TMUX_DST)
 $(TMUX_DST): $(TMUX_SRC)
