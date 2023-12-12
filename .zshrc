@@ -18,7 +18,7 @@ fi
 alias tmux='tmux -u'
 alias grep='grep --color'
 alias ubuntu='docker run -it --rm ubuntu /bin/bash'
-alias k="kubectl --insecure-skip-tls-verify"
+alias k="kubectl"
 
 if [ -f ${HOME}/.kubectl_completion ]; then
   source ${HOME}/.kubectl_completion
