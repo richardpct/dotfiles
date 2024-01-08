@@ -1,8 +1,19 @@
 #!/usr/bin/env bash
 
-function aws_cost {
-  START_DATE=$(date +"%Y-%m-01")
-  END_DATE=$(date +"%Y-%m-%d")
+set -e -u
+
+function next_mounth() {
+  local CURRENT_MOUNTH=$1
+  local NEXT_MOUNTH=$((${CURRENT_MOUNTH#0} + 1))
+  NEXT_MOUNTH=$(($NEXT_MOUNTH % 12))
+
+  printf %02d $NEXT_MOUNTH
+}
+
+function aws_cost() {
+  local START_DATE=$(date +"%Y-%m-01")
+  local NEXT_MOUNTH=$(next_mounth $(date +"%m"))
+  local END_DATE="$(date +"%Y")-$NEXT_MOUNTH-01"
 
   aws ce get-cost-and-usage \
     --time-period "Start=$START_DATE,End=$END_DATE" \
