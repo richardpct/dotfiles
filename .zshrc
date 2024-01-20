@@ -6,7 +6,7 @@ source $ZSH/oh-my-zsh.sh
 
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
-if [ `uname -m` = 'arm64' ] && [ -f /usr/local/bin/brew ]; then
+if [ `uname -m` = 'arm64' ] && [ -f /opt/homebrew/bin/brew ]; then
   PATH=/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin
 fi
 
