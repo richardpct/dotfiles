@@ -10,7 +10,11 @@ CURL               := $(BIN)/curl
 TOUCH              := $(BIN)/touch
 KUBECTL            := kubectl
 TMP                := /tmp
+ifeq "$(OS)" "Darwin"
 SHASUM256          := shasum -a 256
+else
+SHASUM256          := sha256sum
+endif
 ZSHRC_SRC          := .zshrc
 ZSHRC_DST          := $(HOME)/$(ZSHRC_SRC)
 ZSHENV_SRC         := .zshenv
