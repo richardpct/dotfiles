@@ -29,7 +29,7 @@ AWS_CONFIG=~/.aws/config
 AWS_CRED=~/.aws/credentials
 
 if [[ -f $AWS_CONFIG && -f $AWS_CRED ]]; then
-  if [ ! -f $CURRENT_AWS_COST ] || [ $(find $CURRENT_AWS_COST -mmin +60 | wc -l) -eq 1 ]; then
+  if [ ! -f $CURRENT_AWS_COST ] || [ $(find $CURRENT_AWS_COST -mmin +240 | wc -l) -eq 1 ]; then
     aws_cost > $CURRENT_AWS_COST
   fi
 fi
