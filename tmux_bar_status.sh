@@ -4,8 +4,12 @@ set -e -u
 
 function next_mounth() {
   local CURRENT_MOUNTH=$1
+  local DECEMBER_MOUNTH=12
   local NEXT_MOUNTH=$((${CURRENT_MOUNTH#0} + 1))
-  NEXT_MOUNTH=$(($NEXT_MOUNTH % 12))
+
+  if [ $NEXT_MOUNTH -ge $DECEMBER_MOUNTH ]; then
+    NEXT_MOUNTH=$DECEMBER_MOUNTH
+  fi
 
   printf %02d $NEXT_MOUNTH
 }
@@ -27,9 +31,10 @@ function aws_cost() {
 CURRENT_AWS_COST=/tmp/aws_cost.txt
 AWS_CONFIG=~/.aws/config
 AWS_CRED=~/.aws/credentials
+RETENTION=1440
 
 if [[ -f $AWS_CONFIG && -f $AWS_CRED ]]; then
-  if [ ! -f $CURRENT_AWS_COST ] || [ $(find $CURRENT_AWS_COST -mmin +240 | wc -l) -eq 1 ]; then
+  if [ ! -f $CURRENT_AWS_COST ] || [ $(find $CURRENT_AWS_COST -mmin +${RETENTION} | wc -l) -eq 1 ]; then
     aws_cost > $CURRENT_AWS_COST
   fi
 fi
