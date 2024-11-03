@@ -2,22 +2,22 @@
 
 set -e -u
 
-function next_mounth() {
-  local CURRENT_MOUNTH=$1
-  local DECEMBER_MOUNTH=12
-  local NEXT_MOUNTH=$((${CURRENT_MOUNTH#0} + 1))
+function next_month() {
+  local CURRENT_MONTH=$1
+  local DECEMBER_MONTH=12
+  local NEXT_MONTH=$((${CURRENT_MONTH#0} + 1))
 
-  if [ $NEXT_MOUNTH -ge $DECEMBER_MOUNTH ]; then
-    NEXT_MOUNTH=$DECEMBER_MOUNTH
+  if [ $NEXT_MONTH -ge $DECEMBER_MONTH ]; then
+    NEXT_MONTH=$DECEMBER_MONTH
   fi
 
-  printf %02d $NEXT_MOUNTH
+  printf %02d $NEXT_MONTH
 }
 
 function aws_cost() {
   local START_DATE=$(date +"%Y-%m-01")
-  local NEXT_MOUNTH=$(next_mounth $(date +"%m"))
-  local END_DATE="$(date +"%Y")-$NEXT_MOUNTH-01"
+  local NEXT_MONTH=$(next_month $(date +"%m"))
+  local END_DATE="$(date +"%Y")-$NEXT_MONTH-01"
 
   aws ce get-cost-and-usage \
     --time-period "Start=$START_DATE,End=$END_DATE" \
